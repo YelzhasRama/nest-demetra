@@ -27,7 +27,7 @@ export class UsersController {
 
   @Get('get-user-by-id/:id')
   getUserById(@Param('id') id: number) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
 
   @Put()

@@ -1,14 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { UsersModel } from './users.model';
-import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UsersModel)
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: Repository<UsersModel>,
+    @InjectQueue('queueUser') private queueUser: Queue,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UsersModel> {
@@ -28,13 +31,20 @@ export class UsersService {
     const user = this.usersRepository.create({ name, email, password });
     await this.usersRepository.save(user);
 
+    await this.queueUser.add(
+      {
+        userId: user.id,
+      },
+      {
+        delay: 10000,
+      },
+    );
+
     return user;
   }
 
-  async findOne(
-    id: number,
-  ): Promise<UsersModel | { statusCode: number; message: string }> {
-    const user = this.usersRepository.findOne({
+  async findOne(id: number): Promise<UsersModel> {
+    const user = await this.usersRepository.findOne({
       where: { id },
     });
 
