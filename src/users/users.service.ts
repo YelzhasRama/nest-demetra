@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UsersModel } from './users.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +14,7 @@ export class UsersService {
     @InjectRepository(UsersModel)
     private readonly usersRepository: Repository<UsersModel>,
     @InjectQueue('queueUser') private queueUser: Queue,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UsersModel> {
@@ -43,12 +46,31 @@ export class UsersService {
     return user;
   }
 
-  async findOne(id: number): Promise<UsersModel> {
+  async findOne(
+    id: number,
+  ): Promise<
+    UsersModel | { message: string; statusCode: number; user: { name: string } }
+  > {
+    console.log('Консол лог вообще работает или нет ?');
+    const cachedData = await this.cacheManager.get<{ name: string }>(
+      id.toString(),
+    );
+
+    if (cachedData) {
+      console.log('cachedData +++++++: ', cachedData);
+      return {
+        statusCode: 200,
+        message: 'SUCCESS',
+        user: cachedData,
+      };
+    }
+
     const user = await this.usersRepository.findOne({
       where: { id },
     });
 
     if (user) {
+      await this.cacheManager.set(id.toString(), user);
       return user;
     } else {
       throw new NotFoundException({

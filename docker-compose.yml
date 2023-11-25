@@ -1,0 +1,12 @@
+services:
+  redis:
+    container_name: my-redis
+    image: redis
+    ports:
+      - 3003:6379
+    volumes:
+      - redis:/data
+
+volumes:
+  redis:
+    driver: local
