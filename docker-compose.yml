@@ -3,10 +3,20 @@ services:
     container_name: my-redis
     image: redis
     ports:
-      - 3003:6379
+      - 6379:6379
     volumes:
       - redis:/data
 
+  postgres:
+    container_name: postgres
+    image: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/data
+
 volumes:
   redis:
+    driver: local
+  postgres:
     driver: local
