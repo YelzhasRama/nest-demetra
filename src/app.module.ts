@@ -25,7 +25,7 @@ import * as redisStore from 'cache-manager-redis-store';
       store: redisStore,
       host: 'localhost',
       port: 6379,
-      ttl: 10,
+      ttl: 1800,
       max: 10,
     }),
     UsersModule,

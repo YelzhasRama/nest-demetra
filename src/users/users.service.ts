@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersModel } from './users.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectQueue } from '@nestjs/bull';
@@ -7,6 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import axios from 'axios';
 
 @Injectable()
 export class UsersService {
@@ -51,13 +57,11 @@ export class UsersService {
   ): Promise<
     UsersModel | { message: string; statusCode: number; user: { name: string } }
   > {
-    console.log('Консол лог вообще работает или нет ?');
     const cachedData = await this.cacheManager.get<{ name: string }>(
       id.toString(),
     );
 
     if (cachedData) {
-      console.log('cachedData +++++++: ', cachedData);
       return {
         statusCode: 200,
         message: 'SUCCESS',
@@ -77,6 +81,23 @@ export class UsersService {
         statusCode: 400,
         message: 'ERR_USER_NOT_FOUND',
       });
+    }
+  }
+
+  async getData() {
+    try {
+      const { data } = await axios({
+        method: 'GET',
+        url: `https://45.196.48.9:5435`,
+        auth: {
+          username: 'jtzhwqur',
+          password: 'jnf0t0n2tecg',
+        },
+      });
+
+      return data;
+    } catch (error) {
+      throw new ForbiddenException(error);
     }
   }
 
