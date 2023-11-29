@@ -1,5 +1,8 @@
 name: CI Demetra App
-on: push
+on:
+  push:
+    branches:
+      - main
 jobs:
   test:
     runs-on: windows-latest
