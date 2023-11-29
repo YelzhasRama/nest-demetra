@@ -12,6 +12,7 @@ jobs:
         run: npm run test
   lint:
     runs-on: windows-latest
+    steps:
       - name: Get repository code
         uses: actions/checkout@v4
       - name: Install dependencies
@@ -20,6 +21,7 @@ jobs:
         run: npm run lint
   build:
     runs-on: windows-latest
+    steps:
       - name: Get repository code
         uses: actions/checkout@v4
       - name: Install dependencies
