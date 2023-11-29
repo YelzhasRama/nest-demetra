@@ -1,0 +1,30 @@
+name: CI Demetra App
+on: push
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: Test application
+        run: npm run test
+  lint:
+    runs-on: windows-latest
+      - name: Get repository code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint application
+        run: npm run lint
+  build:
+    runs-on: windows-latest
+      - name: Get repository code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: Build application
+        run: npm run build
+      - name: Deploy
+        run: echo Deploying...
