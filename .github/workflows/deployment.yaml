@@ -3,14 +3,19 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - '.github/workflows/*'
+#    paths-ignore:
+#      - '.github/workflows/*'
 jobs:
   test:
     runs-on: windows-latest
     steps:
       - name: Get repository code
         uses: actions/checkout@v4
+      - name: Cache dependencies
+        uses: action/cache@v3
+        with:
+          path: ~/.npm
+          key: node-module-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
         run: npm ci
       - name: Test application
@@ -21,6 +26,11 @@ jobs:
     steps:
       - name: Get repository code
         uses: actions/checkout@v4
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
         run: npm ci
       - name: Lint application
@@ -31,6 +41,11 @@ jobs:
     steps:
       - name: Get repository code
         uses: actions/checkout@v4
+      - name: Cache dependencies
+        uses: action/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
         run: npm ci
       - name: Build application
