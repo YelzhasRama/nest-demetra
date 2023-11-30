@@ -23,6 +23,7 @@ export class UsersService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
+  //Need just for git modifications
   async createUser(createUserDto: CreateUserDto): Promise<UsersModel> {
     const { name, email, password } = createUserDto;
 
