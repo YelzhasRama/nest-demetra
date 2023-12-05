@@ -23,8 +23,9 @@ export class UsersService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  //Need just for git modifications
+  //Need just for git modifications 1
   //Need just for git modifications 2
+  //Need just for git modifications 3
   async createUser(createUserDto: CreateUserDto): Promise<UsersModel> {
     const { name, email, password } = createUserDto;
 
