@@ -14,7 +14,7 @@ import * as redisStore from 'cache-manager-redis-store';
       type: 'postgres',
       host: 'dpg-clokg6p46foc73a1ddog-a',
       port: 5432,
-      username: 'postgres',
+      username: 'demetra_user',
       password: 'SUEAZ4H2rFXiwuS5QjkZby3f6cVsnFoj',
       database: 'demetra',
       entities: [UsersModel],
