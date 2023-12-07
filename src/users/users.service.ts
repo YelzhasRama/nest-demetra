@@ -26,7 +26,7 @@ export class UsersService {
   //Need just for git modifications 1
   //Need just for git modifications 2
   //Need just for git modifications 3
-  //Need just for giit modification 4
+  //Need just for git modification 4
   async createUser(createUserDto: CreateUserDto): Promise<UsersModel> {
     const { name, email, password } = createUserDto;
 
