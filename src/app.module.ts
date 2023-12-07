@@ -12,10 +12,10 @@ import * as redisStore from 'cache-manager-redis-store';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: 'dpg-clokg6p46foc73a1ddog-a',
       port: 5432,
       username: 'postgres',
-      password: 'e2596781234',
+      password: 'SUEAZ4H2rFXiwuS5QjkZby3f6cVsnFoj',
       database: 'demetra',
       entities: [UsersModel],
       synchronize: true,
@@ -23,9 +23,9 @@ import * as redisStore from 'cache-manager-redis-store';
     CacheModule.register({
       isGlobal: true,
       store: redisStore,
-      host: 'localhost',
+      host: 'red-cloki4h46foc73a1dqr0',
       port: 6379,
-      ttl: 1800,
+      ttl: 10,
       max: 10,
     }),
     UsersModule,
