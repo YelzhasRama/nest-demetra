@@ -1,11 +1,6 @@
-import {
-  ForbiddenException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { UsersModel } from './users.model';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { UserEntity } from '../entity/user.entity';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,21 +8,18 @@ import { Repository } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import axios from 'axios';
+import { getProxyConfig } from '../../../configs/proxy.config';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
-    @InjectRepository(UsersModel)
-    private readonly usersRepository: Repository<UsersModel>,
+    @InjectRepository(UserEntity)
+    private readonly usersRepository: Repository<UserEntity>,
     @InjectQueue('queueUser') private queueUser: Queue,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  //Need just for git modifications 1
-  //Need just for git modifications 2
-  //Need just for git modifications 3
-  //Need just for git modification 4
-  async createUser(createUserDto: CreateUserDto): Promise<UsersModel> {
+  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
     const { name, email, password } = createUserDto;
 
     const existingUser = await this.usersRepository.findOne({
@@ -59,7 +51,7 @@ export class UsersService {
   async findOne(
     id: number,
   ): Promise<
-    UsersModel | { message: string; statusCode: number; user: { name: string } }
+    UserEntity | { message: string; statusCode: number; user: { name: string } }
   > {
     const cachedData = await this.cacheManager.get<{ name: string }>(
       id.toString(),
@@ -88,41 +80,19 @@ export class UsersService {
     }
   }
 
-  async getData() {
+  axiosInstance = axios.create({
+    baseURL: 'http://',
+    proxy: getProxyConfig(),
+  });
+
+  makeRequestWithProxy = async () => {
     try {
-      const { data } = await axios({
-        method: 'GET',
-        url: `https://45.196.48.9:5435`,
-        auth: {
-          username: 'jtzhwqur',
-          password: 'jnf0t0n2tecg',
-        },
-      });
-
-      return data;
+      const response = await this.axiosInstance.get('/');
+      console.log(response.data);
+      return response.data;
     } catch (error) {
-      throw new ForbiddenException(error);
+      console.error('Error with request:', error);
+      throw error;
     }
-  }
-
-  async update(
-    id: number,
-    updatedUserData: Partial<UsersModel>,
-  ): Promise<void> {
-    const user = await this.usersRepository.findOne({
-      where: { id },
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User with ID: ${id} not found`);
-    }
-
-    await this.usersRepository.update(id, updatedUserData);
-  }
-
-  async remove(id: number): Promise<void> {
-    await this.usersRepository.query('delete from users_model where id = $1', [
-      id,
-    ]);
-  }
+  };
 }
